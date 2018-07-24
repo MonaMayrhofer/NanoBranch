@@ -1,8 +1,9 @@
-import kotlinx.coroutines.experimental.runBlocking
+/*import kotlinx.coroutines.experimental.runBlocking
 import java.util.*
 import kotlin.concurrent.schedule
 import kotlin.concurrent.timer
 import kotlin.properties.Delegates
+
 
 class ClockController(val nanoleaf: Nanoleaf){
 
@@ -83,4 +84,4 @@ class ClockController(val nanoleaf: Nanoleaf){
             }
         }while(str != ".")
     }
-}
+}*/

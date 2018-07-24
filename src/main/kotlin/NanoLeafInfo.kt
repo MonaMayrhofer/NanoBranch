@@ -1,0 +1,1 @@
+data class NanoLeafInfo(val ip: String, val port: Int)

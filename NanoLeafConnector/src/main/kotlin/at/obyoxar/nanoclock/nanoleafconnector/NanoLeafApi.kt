@@ -143,13 +143,17 @@ open class NanoLeafApi(val ip: InetAddress, val port: Short) {
     lateinit var token: String
     private set
 
+    lateinit var state: State
+    lateinit var panelLayout: PanelLayout
+    lateinit var effects: Effects
+
     suspend fun loadToken(token: String?){
         this@NanoLeafApi.token = token ?: StatelessNanoLeafApi.newUser(address).authToken
+        state = State()
+        panelLayout = PanelLayout()
+        effects = Effects()
     }
 
-    val state = State()
-    val panelLayout = PanelLayout()
-    val effects = Effects()
 
     inner class State{
         suspend fun on(address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token): BoolValue                           = StatelessNanoLeafApi.state.on(address, authToken)

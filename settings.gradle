@@ -1,2 +1,5 @@
+include 'NanoLeafConnector'
+include 'NanoClock'
+
 rootProject.name = 'nanoclock'
 

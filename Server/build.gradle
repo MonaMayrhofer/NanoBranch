@@ -9,5 +9,5 @@ sourceCompatibility = 1.8
 dependencies {
     compile "io.ktor:ktor-server-core:$ktor_version"
     compile "io.ktor:ktor-server-netty:$ktor_version"
-    compile project(':NanoLeafConnector')
+    compile project(':Connector')
 }

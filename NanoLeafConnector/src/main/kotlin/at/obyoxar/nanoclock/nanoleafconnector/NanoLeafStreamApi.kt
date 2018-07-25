@@ -1,16 +1,16 @@
+package at.obyoxar.nanoclock.nanoleafconnector
+
 import kotlinx.coroutines.experimental.launch
 import mu.KotlinLogging
 import java.awt.Color
-import java.awt.geom.Rectangle2D
+import java.io.Flushable
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentMap
 
 private val logger = KotlinLogging.logger {  }
 
-class NanoLeafStreamApi(ip: InetAddress, port: Short) : NanoLeafApi(ip, port) {
+class NanoLeafStreamApi(ip: InetAddress, port: Short) : NanoLeafApi(ip, port), Flushable {
     lateinit var streamControlIpAddr: InetAddress
     var streamControlPort: Int = 0
     val socket = DatagramSocket()
@@ -49,8 +49,10 @@ class NanoLeafStreamApi(ip: InetAddress, port: Short) : NanoLeafApi(ip, port) {
         }
     }
 
-    fun flush(){
+    override fun flush(){
         synchronized(buffer){
+            if(buffer.isEmpty())
+                return
             val bytes = arrayOf(
                     buffer.size.toByte()
             ) + buffer.flatMap {
@@ -59,6 +61,8 @@ class NanoLeafStreamApi(ip: InetAddress, port: Short) : NanoLeafApi(ip, port) {
                 }).asIterable()
             }
             buffer.clear()
+
+
 
             logger.trace { bytes.map { it.toPositiveInt() }.joinToString() }
 

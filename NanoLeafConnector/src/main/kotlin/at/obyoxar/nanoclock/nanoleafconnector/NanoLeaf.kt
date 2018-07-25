@@ -1,15 +1,18 @@
+package at.obyoxar.nanoclock.nanoleafconnector
+
+import kotlinx.coroutines.experimental.launch
 import mu.KotlinLogging
 import java.awt.Color
 import java.awt.geom.Rectangle2D
 import java.io.File
 import java.net.InetAddress
 import java.util.*
-import kotlin.concurrent.timerTask
-import kotlin.properties.Delegates
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 private val logger = KotlinLogging.logger {  }
 
-class NanoLeaf private constructor(ip: InetAddress, port: Short){
+class NanoLeaf private constructor(ip: InetAddress, port: Short) {
 
     val api = NanoLeafStreamApi(ip, port)
 
@@ -17,6 +20,7 @@ class NanoLeaf private constructor(ip: InetAddress, port: Short){
         private set
     val size = Rectangle2D.Double()
     val animator = Animator()
+    val browser: NanoLeafBrowser by lazy { NanoLeafBrowser(this) }
 
     suspend fun start(){
         api.loadToken(File("token.txt").takeIf { it.exists() }?.readLines()?.get(0))
@@ -36,30 +40,118 @@ class NanoLeaf private constructor(ip: InetAddress, port: Short){
         }
     }
 
-    val animationTimer = Timer()
-    var animationTask: TimerTask? = null
 
-    fun animation(hertz: Double = 10.0, animation: Animator.() -> Unit){
-        assert(hertz < 10)
+    fun identify(){
         pauseAnimation()
-        animationTask = timerTask {
-            animator.animation()
-            panels.forEach(Panel::apply)
-            api.flush()
+        println("Y to store in list, any other key to skip")
+        val store = panels.filter {
+            it.applyColor(Color.BLUE)
+            println("Panel: ${it.uid}")
+            var line = readLine()
+            while(line?.toUpperCase() != "Y" && line?.toUpperCase() != "N")
+                line = readLine()
+            (line.toUpperCase() == "Y").also { keep ->
+                if(keep){
+                    it.applyColor(Color.GREEN)
+                }else{
+                    it.applyColor(Color.RED)
+                }
+                it.applyColorDelayed(Color.BLACK, 1000)
+            }
         }
-        playAnimation(hertz)
+        println("Specify desired index in list")
+        val sortStore = store.map {
+            println("Panel: ${it.uid}")
+            it.applyColor(Color.GREEN)
+
+            var line = readLine()
+            while(line?.toIntOrNull() == null) line = readLine()
+            it.applyColor(Color.BLUE)
+            it.applyColorDelayed(Color.BLACK, 300)
+            (line!!.toInt() to it)
+        }.sortedBy {
+            it.first
+        }.map { it.second.uid }.joinToString()
+        println(sortStore)
+        resumeAnimation()
     }
 
-    fun stopAnimation(){
+    private val animationTimer = Timer()
+    private var animationTask: RestartableTimerTask? = null
+    private var hertz: Double? = null
+
+    fun animation(hertz: Double = 10.0, animation: Animator.() -> Unit){
+        animation(object: Animation{
+            override fun animate(animator: Animator) {
+                animator.animation()
+            }
+        }, hertz)
+    }
+
+    fun animation(animation: Animation, hertz: Double = 10.0){
+        logger.info("Changing animation to ${animation::class}")
+        assert(hertz < 10)
+        this.hertz = hertz
+
+        pauseAnimation()
+        logger.info("Changing animation to ${animation::class}")
+        launch {
+            animation.onStart(animator)
+
+            animation.animate(animator)
+            animator.applyPanels(10)
+            api.flush()
+            animationTask = restartableTimerTask {
+                animator.updateTime()
+                animation.animate(animator)
+                animator.applyPanels(1)
+                api.flush()
+            }
+            resumeAnimation(immediateStart = false)
+        }
+    }
+
+    fun shutdownAnimation(){
         animationTimer.cancel()
     }
 
-    fun pauseAnimation(){
+    fun pauseAnimation(keepImage: Boolean = false){
         animationTask?.cancel()
+        if(!keepImage){
+            logger.trace("Paused Animation with black!")
+            animator.fill(Color.BLACK)
+            animator.applyPanels(3)
+            api.flush()
+        }
     }
 
-    fun playAnimation(hertz: Double){
-        animationTimer.schedule(animationTask, 0, (1000.0/hertz).toLong())
+    fun resumeAnimation(hertz: Double = this.hertz?:10.0, immediateStart: Boolean = false){
+        assert(hertz < 10)
+        val delay = (1000.0/hertz).toLong()
+        animationTimer.schedule(animationTask ?: return, if(immediateStart) 0 else delay, delay)
+    }
+
+    private val dischargeTimer = Timer("NanoLeafDischargeTimer")
+    private val scheduledChanges = HashMap<Int, List<ChangeInfo>>()
+    fun scheduleChange(changeInfo: ChangeInfo){
+        val changes = scheduledChanges.getOrElse(changeInfo.panel.uid) { ArrayList() }
+        val newChanges = changes.filter {
+            (it.date < changeInfo.date).also { if(it) changeInfo.task.cancel()}
+        } + listOf(changeInfo)
+        scheduledChanges[changeInfo.panel.uid] = newChanges
+        dischargeTimer.schedule(changeInfo.task, changeInfo.date)
+    }
+
+    fun cancelChangesFor(panel: Panel){
+        scheduledChanges[panel.uid]?.forEach {
+            it.task.cancel()
+        }
+        scheduledChanges.remove(panel.uid)
+    }
+
+    fun shutdown(){
+        shutdownAnimation()
+        dischargeTimer.cancel()
     }
 
     inner class Animator{
@@ -81,7 +173,33 @@ class NanoLeaf private constructor(ip: InetAddress, port: Short){
         fun fill(color: Color){
             panels.forEach { it.color = color }
         }
+
+        var delta: Long = 0
+            private set
+        var time: Long = 0
+            private set
+
+        fun updateTime(){
+            val now = System.currentTimeMillis()
+            delta = now-time
+            time = now
+        }
+
+        fun panel(uid: Int) = panels.first{it.uid == uid}
+
+        fun applyPanels(time: Byte){
+            panels.forEach {
+                it.apply(time)
+            }
+        }
     }
+}
+
+
+
+data class ChangeInfo(val panel: Panel, val date: Date, val duration: Byte, val task: RestartableTimerTask){
+    constructor(panel: Panel, delay: Long, duration: Byte, task: RestartableTimerTask)
+    :this(panel, Date(System.currentTimeMillis()+delay), duration, task)
 }
 
 private fun Color.blendWith(color: Color): Color {
@@ -114,7 +232,35 @@ class Panel(
 ){
     var color: Color = Color.BLACK
 
-    fun apply(){
-        nanoLeaf.api.write(PanelFrame(tempId, color, 1))
+    fun apply(time: Byte = 1){
+        nanoLeaf.cancelChangesFor(this)
+        nanoLeaf.api.write(PanelFrame(tempId, color, time))
+    }
+
+    fun applyColor(color: Color, time: Byte = 1, flush: Boolean = true){
+        this.color = color
+        apply(time)
+        if(flush)
+            nanoLeaf.api.flush()
+    }
+
+    fun applyColorDelayed(color: Color, milliseconds: Long = 1000, duration: Byte = 1){
+        nanoLeaf.scheduleChange(ChangeInfo(this, milliseconds, duration, restartableTimerTask {
+            applyColor(color)
+        }))
+    }
+
+    fun <T> whileColor(color: Color, dischargeTime: Long = 250, dischargeTransitionTime: Byte = 2, codeBlock: () -> T): T{
+        val prevColor = this.color
+        applyColor(color)
+        return codeBlock().also {
+            discharge(dischargeTime, dischargeTransitionTime, prevColor)
+        }
+    }
+
+    fun discharge(milliseconds: Long, duration: Byte = 1, color: Color = Color.BLACK){
+        nanoLeaf.scheduleChange(ChangeInfo(this, milliseconds, duration, restartableTimerTask {
+            applyColor(color)
+        }))
     }
 }

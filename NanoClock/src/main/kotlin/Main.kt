@@ -1,3 +1,4 @@
+import at.obyoxar.nanoclock.nanoleafconnector.NanoLeaf
 import com.sun.javafx.geom.Vec2d
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
@@ -11,55 +12,26 @@ import java.util.concurrent.Semaphore
 import kotlin.math.sign
 
 private val logger = KotlinLogging.logger {  }
-private val random = Random()
-
-class Dot(val bounds: Rectangle2D, val color: Color){
-    var offsetX = random.nextDouble()*bounds.width+bounds.minX
-    var offsetY = random.nextDouble()*bounds.height+bounds.minY
-
-    var velX = random.nextDouble()*40-20
-    var velY = random.nextDouble()*40-20
-
-    fun tick(){
-        if(offsetX > bounds.maxX-20) velX *= -1
-        if(offsetY > bounds.maxY-20) velY *= -1
-        if(offsetX < bounds.minX+20) velX *= -1
-        if(offsetY < bounds.minY+20) velY *= -1
-
-        offsetX += velX
-        offsetY += velY
-    }
-
-}
 
 fun main(args: Array<String>){
     val nanoLeaf = runBlocking {
         NanoLeaf.connectTo("192.168.170.121")
     }
-
     nanoLeaf.api.switchOn()
 
-    val dots = arrayOf(
-            Dot(nanoLeaf.size, Color.RED),
-            Dot(nanoLeaf.size, Color.GREEN),
-            Dot(nanoLeaf.size, Color.CYAN)
-    )
+    launch {
+        nanoLeaf.animation(DotsAnimation(nanoLeaf.size))
 
-    nanoLeaf.animation{
-        fill(Color.BLACK)
-        dots.forEach { it.tick() }
-        dots.forEach {
-            dot(it.offsetX, it.offsetY, it.color, 150.0)
-        }
+        delay(1000)
 
+        nanoLeaf.animation(ClockAnimation(nanoLeaf), 0.1)
     }
-
 
     val s = Semaphore(0)
     Signal.handle(Signal("INT")) {
         logger.info("Shutting down...")
         launch {
-            nanoLeaf.stopAnimation()
+            nanoLeaf.shutdown()
             nanoLeaf.api.switchOff()
             delay(100)
             s.release()

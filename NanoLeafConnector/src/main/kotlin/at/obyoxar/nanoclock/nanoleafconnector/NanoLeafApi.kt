@@ -1,17 +1,14 @@
+package at.obyoxar.nanoclock.nanoleafconnector
+
+import awaitByteArrayResponse
+import awaitObjectResponse
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.Request
 import com.github.kittinunf.fuel.gson.gsonDeserializerOf
 import com.google.gson.Gson
-import com.sun.org.apache.xpath.internal.operations.Bool
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
 import mu.KotlinLogging
-import sun.management.snmp.jvminstr.JvmThreadInstanceEntryImpl.ThreadStateMap.setState
-import java.io.OutputStream
-import java.net.DatagramSocket
 import java.net.InetAddress
 import java.util.*
-import javax.accessibility.AccessibleStateSet
 
 private val logger = KotlinLogging.logger {}
 

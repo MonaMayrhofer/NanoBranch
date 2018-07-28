@@ -1,15 +1,10 @@
 import at.obyoxar.nanoclock.nanoleafconnector.NanoLeaf
-import com.sun.javafx.geom.Vec2d
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import mu.KotlinLogging
 import sun.misc.Signal
-import java.awt.Color
-import java.awt.geom.Rectangle2D
-import java.util.*
 import java.util.concurrent.Semaphore
-import kotlin.math.sign
 
 private val logger = KotlinLogging.logger {  }
 

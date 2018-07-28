@@ -16,7 +16,7 @@ suspend inline fun <reified T : Any> Request.awaitObject(): T{
     val (_, response, result) = awaitObjectResponse(gsonDeserializerOf<T>())
     val (objekt, _) = result
     if(response.statusCode != 200){
-        throw Exception("Get of Property returned ${response.statusCode}") //TODO Better error handling
+        throw HttpException(response.statusCode) //TODO Better error handling
     }
     return objekt!!
 }
@@ -25,14 +25,14 @@ suspend inline fun Request.awaitNothing() {
     val (_, response, result) = awaitByteArrayResponse()
     val (_, _) = result
     if(response.statusCode != 200){
-        throw Exception("Get of Property returned ${response.statusCode}") //TODO Better error handling
+        throw HttpException(response.statusCode) //TODO Better error handling
     }
 }
 
 suspend inline fun Request.sendString(string: String) {
     val (_, response, _) = body(string).awaitByteArrayResponse()
     if(response.statusCode != 204){
-        throw Exception("Set of Property returned ${response.statusCode}") //TODO Better error handling
+        throw HttpException(response.statusCode) //TODO Better error handling
     }
 }
 
@@ -42,7 +42,7 @@ suspend inline fun <reified T : Any> Request.sendStringWithResponse(string: Stri
     //val (_, response, result) = body(string).awaitStringResponse()
     val (objekt, _) = result
     if(response.statusCode != 200){
-        throw Exception("Set of Property returned ${response.statusCode}") //TODO Better error handling
+        throw HttpException(response.statusCode) //TODO Better error handling
     }
     return objekt!!
     //println(objekt!!)
@@ -50,7 +50,16 @@ suspend inline fun <reified T : Any> Request.sendStringWithResponse(string: Stri
 }
 
 object StatelessNanoLeafApi {
-    suspend fun newUser(address: String): AuthTokenResponse = Fuel.post("$address/api/v1/new").awaitObject()
+    suspend fun newUser(address: String): AuthTokenResponse {
+        try{
+            return Fuel.post("$address/api/v1/new").awaitObject()
+        }catch(e: HttpException){
+            if(e.code == 403){
+                throw Exception("NanoLeafs are not in pairing mode and thus cannot create new User", e)
+            }
+            throw e
+        }
+    }
 
     suspend fun completeInfo(address: String, authToken: String): CompleteInfo = Fuel.get("$address/api/v1/$authToken").awaitObject()
 

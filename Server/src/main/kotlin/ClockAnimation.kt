@@ -12,7 +12,7 @@ class ClockAnimation(nanoLeaf: NanoLeaf): Animation{
             "im4", "im2", "im1"
     ))
 
-    val onColor = Color.RED
+    val onColor = Color(5, 0, 0)
 
     override fun animate(animator: NanoLeaf.Animator) {
         with(animator) {

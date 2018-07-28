@@ -1,7 +1,7 @@
 apply plugin: 'application'
 
-group 'at.obyoxar.nanoclock'
-version '1.0-SNAPSHOT'
+group = 'at.obyoxar.nanoclock'
+version = '0.1.0'
 mainClassName = "MainKt"
 
 sourceCompatibility = 1.8

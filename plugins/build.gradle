@@ -1,0 +1,21 @@
+subprojects {
+    jar {
+        manifest {
+            attributes 'Plugin-Class': "${pluginClass}",
+                    'Plugin-Id': "${pluginId}",
+                    'Plugin-Version': "${version}",
+                    'Plugin-Provider': "${pluginProvider}"
+        }
+    }
+    jar.baseName = "plugin-${pluginId}"
+    task assemblePlugin(type: Copy) {
+        from jar
+        into pluginsDir
+    }
+}
+
+task assemblePlugins(type: Copy) {
+    dependsOn subprojects.assemblePlugin
+}
+
+build.dependsOn project.tasks.assemblePlugins

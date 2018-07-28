@@ -1,13 +1,13 @@
 apply plugin: 'application'
 
-group = 'at.obyoxar.nanoclock'
 version = '0.1.0'
-mainClassName = "MainKt"
+mainClassName = "at.obyoxar.nanobranchserver.MainKt"
 
 sourceCompatibility = 1.8
 
 dependencies {
     compile "io.ktor:ktor-server-core:$ktor_version"
     compile "io.ktor:ktor-server-netty:$ktor_version"
-    compile project(':Connector')
+    compile "org.pf4j:pf4j:2.3.0"
+    compile project(':lib:Connector')
 }

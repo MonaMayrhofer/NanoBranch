@@ -10,7 +10,7 @@
     </Appenders>
     <Loggers>
 
-        <Logger name="at.obyoxar.nanoclock.nanoleafconnector.NanoLeafStreamApi" level="TRACE">
+        <Logger name="at.obyoxar.nanobranch.nanoleafconnector.NanoLeafStreamApi" level="TRACE">
             <AppenderRef ref="Console"/>
         </Logger><!--
         <Logger name="at.obyoxar.nanoclock.nanoleafconnector.NanoLeaf" level="TRACE">

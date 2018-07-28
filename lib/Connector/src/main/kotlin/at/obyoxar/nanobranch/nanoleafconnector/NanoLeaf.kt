@@ -1,4 +1,4 @@
-package at.obyoxar.nanoclock.nanoleafconnector
+package at.obyoxar.nanobranch.nanoleafconnector
 
 import kotlinx.coroutines.experimental.launch
 import mu.KotlinLogging
@@ -81,7 +81,7 @@ class NanoLeaf private constructor(ip: InetAddress, port: Short) {
     private var hertz: Double? = null
 
     fun animation(hertz: Double = 10.0, animation: Animator.() -> Unit){
-        animation(object: Animation{
+        animation(object: Animation {
             override fun animate(animator: Animator) {
                 animator.animation()
             }
@@ -152,6 +152,7 @@ class NanoLeaf private constructor(ip: InetAddress, port: Short) {
     fun shutdown(){
         shutdownAnimation()
         dischargeTimer.cancel()
+        api.switchOff()
     }
 
     inner class Animator{

@@ -1,4 +1,4 @@
-package at.obyoxar.nanoclock.nanoleafconnector
+package at.obyoxar.nanobranch.nanoleafconnector
 
 import mu.KotlinLogging
 import java.awt.Color

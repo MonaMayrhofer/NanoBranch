@@ -1,19 +1,37 @@
-import at.obyoxar.nanoclock.nanoleafconnector.NanoLeaf
+package at.obyoxar.nanobranchserver
+
+import at.obyoxar.nanobranch.nanoleafconnector.NanoLeaf
+import at.obyoxar.nanobranchserver.plugin.TestExtension
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import mu.KotlinLogging
+import org.pf4j.DefaultPluginManager
 import sun.misc.Signal
+import java.nio.file.Paths
 import java.util.concurrent.Semaphore
 
 private val logger = KotlinLogging.logger {  }
 
 fun main(args: Array<String>){
+    logger.info("Starting up")
+
+    val pluginManager = DefaultPluginManager()
+    logger.info("Loading plugins from ${pluginManager.pluginsRoot.toAbsolutePath()}")
+    pluginManager.loadPlugins()
+    pluginManager.startPlugins()
+
     val nanoLeaf = runBlocking {
         NanoLeaf.connectTo("192.168.170.121")
     }
     nanoLeaf.api.switchOn()
 
+    pluginManager.getExtensions(TestExtension::class.java).forEach {
+        println(it)
+        it.helloWorld()
+    }
+
+    /*
     launch {
         nanoLeaf.animation(DotsAnimation(nanoLeaf.size))
 
@@ -21,13 +39,13 @@ fun main(args: Array<String>){
 
         nanoLeaf.animation(ClockAnimation(nanoLeaf), 0.1)
     }
+*/
 
     val s = Semaphore(0)
     Signal.handle(Signal("INT")) {
         logger.info("Shutting down...")
         launch {
             nanoLeaf.shutdown()
-            nanoLeaf.api.switchOff()
             delay(100)
             s.release()
         }

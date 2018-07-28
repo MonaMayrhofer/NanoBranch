@@ -1,9 +1,21 @@
-import at.obyoxar.nanoclock.nanoleafconnector.*
+package at.obyoxar.nanobranch.basicanimations
+
+import at.obyoxar.nanobranch.nanoleafconnector.*
+import at.obyoxar.nanobranchserver.plugin.TestExtension
 import kotlinx.coroutines.experimental.delay
+import org.pf4j.Extension
 import java.awt.Color
 import java.util.*
 
-class ClockAnimation(nanoLeaf: NanoLeaf): Animation{
+
+@Extension
+class HelloWorldAnimation: TestExtension {
+    override fun helloWorld() {
+        println("== ===== ==== =HELLO WORLD= ====== ")
+    }
+}
+
+class ClockAnimation(nanoLeaf: NanoLeaf): Animation {
 
     private val positions = nanoLeaf.browser.loadMap("ClockAnimation.map", listOf(
             "hAnchor", "mAnchor", "imAnchor",
@@ -80,4 +92,3 @@ class ClockAnimation(nanoLeaf: NanoLeaf): Animation{
         //delay(1000)
     }
 }
-

@@ -1,5 +1,7 @@
-import at.obyoxar.nanoclock.nanoleafconnector.Animation
-import at.obyoxar.nanoclock.nanoleafconnector.NanoLeaf
+package at.obyoxar.nanobranchserver
+
+import at.obyoxar.nanobranch.nanoleafconnector.Animation
+import at.obyoxar.nanobranch.nanoleafconnector.NanoLeaf
 import java.awt.Color
 import java.awt.geom.Rectangle2D
 import java.util.*
@@ -24,7 +26,7 @@ class Dot(val bounds: Rectangle2D, val color: Color){
     }
 
 }
-class DotsAnimation(boundingBox: Rectangle2D) : Animation{
+class DotsAnimation(boundingBox: Rectangle2D) : Animation {
     val dots = arrayOf(
             Dot(boundingBox, Color.RED),
             Dot(boundingBox, Color.GREEN),

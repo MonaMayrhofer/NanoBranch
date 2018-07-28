@@ -5,6 +5,8 @@ buildscript {
     ext.ktor_version = '0.9.3'
     ext.log4j_version = '2.11.0'
 
+    ext.pluginsDir = rootProject.buildDir.path + '/plugins'
+
     repositories {
         mavenCentral()
     }
@@ -14,6 +16,8 @@ buildscript {
 }
 
 subprojects{
+    group = 'at.obyoxar.nanobranch'
+
     apply plugin: 'java'
     apply plugin: 'kotlin'
 

@@ -1,4 +1,4 @@
-package at.obyoxar.nanoclock.nanoleafconnector
+package at.obyoxar.nanobranch.nanoleafconnector
 
 import awaitByteArrayResponse
 import awaitObjectResponse
@@ -99,22 +99,22 @@ object StatelessNanoLeafApi {
     private suspend inline fun <reified T : Any> setPanelLayout(address: String, authToken: String, state: String, value: T) = setProp(address, authToken, "panelLayout", state, value)
 
     object state {
-        suspend fun on(address: String, authToken: String): BoolValue                           = getState(address, authToken, "on")
+        suspend fun on(address: String, authToken: String): BoolValue = getState(address, authToken, "on")
         suspend fun on(address: String, authToken: String, value: Boolean)                      = setState(address, authToken, "on", BoolValue(value))
 
-        suspend fun brightness(address: String, authToken: String): RangeValue                  = getState(address, authToken, "brightness")
+        suspend fun brightness(address: String, authToken: String): RangeValue = getState(address, authToken, "brightness")
         suspend fun brightness(address: String, authToken: String, value: NumericTransition)    = setState(address, authToken, "brightness", value)
         suspend fun brightness(address: String, authToken: String, value: Increment)            = setState(address, authToken, "brightness", value)
 
-        suspend fun hue(address: String, authToken: String): RangeValue                         = getState(address, authToken, "hue")
+        suspend fun hue(address: String, authToken: String): RangeValue = getState(address, authToken, "hue")
         suspend fun hue(address: String, authToken: String, value: NumericValue)                = setState(address, authToken, "hue", value)
         suspend fun hue(address: String, authToken: String, value: Increment)                   = setState(address, authToken, "hue", value)
 
-        suspend fun saturation(address: String, authToken: String): RangeValue                  = getState(address, authToken, "sat")
+        suspend fun saturation(address: String, authToken: String): RangeValue = getState(address, authToken, "sat")
         suspend fun saturation(address: String, authToken: String, value: NumericValue)         = setState(address, authToken, "sat", value)
         suspend fun saturation(address: String, authToken: String, value: Increment)            = setState(address, authToken, "sat", value)
 
-        suspend fun temperature(address: String, authToken: String): RangeValue                 = getState(address, authToken, "ct")
+        suspend fun temperature(address: String, authToken: String): RangeValue = getState(address, authToken, "ct")
         suspend fun temperature(address: String, authToken: String, value: NumericValue)        = setState(address, authToken, "ct", value)
         suspend fun temperature(address: String, authToken: String, value: Increment)           = setState(address, authToken, "ct", value)
 
@@ -133,10 +133,10 @@ object StatelessNanoLeafApi {
     }
 
     object panelLayout {
-        suspend fun globalOrientation(address: String, authToken: String): RangeValue            = getPanelLayout(address, authToken, "globalOrientation")
+        suspend fun globalOrientation(address: String, authToken: String): RangeValue = getPanelLayout(address, authToken, "globalOrientation")
         suspend fun globalOrientation(address: String, authToken: String, value: NumericValue)   = setPanelLayout(address, authToken, "globalOrientation", value)
 
-        suspend fun layout(address: String, authToken: String): Layout                           = getPanelLayout(address, authToken, "layout")
+        suspend fun layout(address: String, authToken: String): Layout = getPanelLayout(address, authToken, "layout")
 
         suspend fun identify(address: String, authToken: String)                                 = sendIdentify(address, authToken)
     }
@@ -162,24 +162,24 @@ open class NanoLeafApi(val ip: InetAddress, val port: Short) {
 
 
     inner class State{
-        suspend fun on(address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token): BoolValue                           = StatelessNanoLeafApi.state.on(address, authToken)
+        suspend fun on(address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token): BoolValue = StatelessNanoLeafApi.state.on(address, authToken)
         suspend fun on(value: Boolean, address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token)                      = StatelessNanoLeafApi.state.on(address, authToken, value)
 
-        suspend fun brightness(address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token): RangeValue                  = StatelessNanoLeafApi.state.brightness(address, authToken)
+        suspend fun brightness(address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token): RangeValue = StatelessNanoLeafApi.state.brightness(address, authToken)
         suspend fun brightness(value: NumericTransition, address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token)    = StatelessNanoLeafApi.state.brightness(address, authToken, value)
         suspend fun brightness(value: Increment, address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token)            = StatelessNanoLeafApi.state.brightness(address, authToken, value)
 
-        suspend fun hue(address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token): RangeValue                         = StatelessNanoLeafApi.state.hue(address, authToken)
+        suspend fun hue(address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token): RangeValue = StatelessNanoLeafApi.state.hue(address, authToken)
         suspend fun hue(value: NumericValue, address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token)                = StatelessNanoLeafApi.state.hue(address, authToken, value)
-        suspend fun hue(value: Increment, address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token)                   = StatelessNanoLeafApi.state.hue(address, authToken,value)
+        suspend fun hue(value: Increment, address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token)                   = StatelessNanoLeafApi.state.hue(address, authToken, value)
 
-        suspend fun saturation(address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token): RangeValue                  = StatelessNanoLeafApi.state.saturation(address, authToken)
+        suspend fun saturation(address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token): RangeValue = StatelessNanoLeafApi.state.saturation(address, authToken)
         suspend fun saturation(value: NumericValue, address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token)         = StatelessNanoLeafApi.state.saturation(address, authToken, value)
-        suspend fun saturation(value: Increment, address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token)            = StatelessNanoLeafApi.state.saturation(address, authToken,value)
+        suspend fun saturation(value: Increment, address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token)            = StatelessNanoLeafApi.state.saturation(address, authToken, value)
 
-        suspend fun temperature(address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token): RangeValue                 = StatelessNanoLeafApi.state.temperature(address, authToken)
+        suspend fun temperature(address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token): RangeValue = StatelessNanoLeafApi.state.temperature(address, authToken)
         suspend fun temperature(value: NumericValue, address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token)        = StatelessNanoLeafApi.state.temperature(address, authToken, value)
-        suspend fun temperature(value: Increment, address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token)           = StatelessNanoLeafApi.state.temperature(address, authToken,value)
+        suspend fun temperature(value: Increment, address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token)           = StatelessNanoLeafApi.state.temperature(address, authToken, value)
 
         suspend fun colorMode(address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token): String                       = StatelessNanoLeafApi.state.colorMode(address, authToken)
     }
@@ -196,10 +196,10 @@ open class NanoLeafApi(val ip: InetAddress, val port: Short) {
     }
 
     inner class PanelLayout {
-        suspend fun globalOrientation(address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token): RangeValue            = StatelessNanoLeafApi.panelLayout.globalOrientation(address, authToken)
+        suspend fun globalOrientation(address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token): RangeValue = StatelessNanoLeafApi.panelLayout.globalOrientation(address, authToken)
         suspend fun globalOrientation(value: NumericValue, address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token)   = StatelessNanoLeafApi.panelLayout.globalOrientation(address, authToken, value)
 
-        suspend fun layout(address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token): Layout                           = StatelessNanoLeafApi.panelLayout.layout(address, authToken)
+        suspend fun layout(address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token): Layout = StatelessNanoLeafApi.panelLayout.layout(address, authToken)
 
         suspend fun identify(address: String = this@NanoLeafApi.address, authToken: String = this@NanoLeafApi.token)                                 = StatelessNanoLeafApi.panelLayout.identify(address, authToken)
     }

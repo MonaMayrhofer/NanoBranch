@@ -1,4 +1,4 @@
-package at.obyoxar.nanoclock.nanoleafconnector
+package at.obyoxar.nanobranch.nanoleafconnector
 
 import kotlinx.coroutines.experimental.launch
 import mu.KotlinLogging

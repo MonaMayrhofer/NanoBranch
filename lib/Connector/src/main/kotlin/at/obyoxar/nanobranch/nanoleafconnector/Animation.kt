@@ -1,4 +1,4 @@
-package at.obyoxar.nanoclock.nanoleafconnector
+package at.obyoxar.nanobranch.nanoleafconnector
 
 interface Animation{
     fun animate(animator: NanoLeaf.Animator)

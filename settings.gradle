@@ -1,5 +1,9 @@
-include 'Connector'
+include 'lib'
+include ':lib:Connector'
+
+include 'plugins'
+include 'plugins:BasicAnimations'
 include 'Server'
 
-rootProject.name = 'nanoleafkt'
+rootProject.name = 'nanobranch'
 

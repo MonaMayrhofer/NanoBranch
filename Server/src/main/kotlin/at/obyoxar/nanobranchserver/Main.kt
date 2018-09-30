@@ -1,6 +1,7 @@
 package at.obyoxar.nanobranchserver
 
 import at.obyoxar.nanobranch.nanoleafconnector.NanoLeaf
+import at.obyoxar.nanobranchserver.plugin.App
 import at.obyoxar.nanobranchserver.plugin.TestExtension
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
@@ -8,7 +9,6 @@ import kotlinx.coroutines.experimental.runBlocking
 import mu.KotlinLogging
 import org.pf4j.DefaultPluginManager
 import sun.misc.Signal
-import java.nio.file.Paths
 import java.util.concurrent.Semaphore
 
 private val logger = KotlinLogging.logger {  }
@@ -26,9 +26,10 @@ fun main(args: Array<String>){
     }
     nanoLeaf.api.switchOn()
 
-    pluginManager.getExtensions(TestExtension::class.java).forEach {
-        println(it)
-        it.helloWorld()
+    val apps = pluginManager.getExtensions(App::class.java)
+    logger.info("Loaded Apps:")
+    apps.forEach {
+        logger.info(it::class.simpleName)
     }
 
     /*

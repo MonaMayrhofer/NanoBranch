@@ -8,13 +8,6 @@ import java.awt.Color
 import java.util.*
 
 
-@Extension
-class HelloWorldAnimation: TestExtension {
-    override fun helloWorld() {
-        println("== ===== ==== =HELLO WORLD= ====== ")
-    }
-}
-
 class ClockAnimation(nanoLeaf: NanoLeaf): Animation {
 
     private val positions = nanoLeaf.browser.loadMap("ClockAnimation.map", listOf(

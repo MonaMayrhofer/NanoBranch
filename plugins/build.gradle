@@ -12,6 +12,16 @@ subprojects {
         from jar
         into pluginsDir
     }
+
+    apply plugin: 'kotlin-kapt'
+
+    dependencies {
+        compileOnly(group: 'org.pf4j', name: 'pf4j', version: "1.3.0") {
+            exclude group: "org.slf4j"
+        }
+        compileOnly project(':Server')
+        kapt 'ro.fortsoft.pf4j:pf4j:1.3.0'
+    }
 }
 
 task assemblePlugins(type: Copy) {
